@@ -41,7 +41,7 @@ Todos os frames de gestão compartilham navegação lateral, breadcrumb, busca, 
 
 ## Contrato da API
 
-Cada linha pode ser listada por `GET /api/{recurso}` ou consultada em `GET /api/{recurso}/{id}`. A criação usa `POST`, a edição integral usa `PUT /api/{recurso}/{id}` e a exclusão usa `DELETE /api/{recurso}/{id}`. Uma exclusão que deixaria registros dependentes sem vínculo retorna 409. As respostas de leitura e escrita contêm `{id, criadoEm, dados}`. `id` é UUID, `criadoEm` é data e hora ISO com fuso e as datas de negócio usam `AAAA-MM-DD`. POST e PUT recebem o conteúdo de `dados`.
+Cada linha pode ser listada por `GET /api/{recurso}` ou consultada em `GET /api/{recurso}/{id}`. A criação usa `POST`, a edição integral usa `PUT /api/{recurso}/{id}` e a exclusão usa `DELETE /api/{recurso}/{id}`. Ao excluir um aluno, suas mensalidades, fichas de treino e avaliações também são excluídas. Ao excluir um plano, seus alunos e os registros dependentes deles são excluídos. Ao excluir um professor, seu vínculo com alunos é removido e suas fichas de treino e avaliações são excluídas. As respostas de leitura e escrita contêm `{id, criadoEm, dados}`. `id` é UUID, `criadoEm` é data e hora ISO com fuso e as datas de negócio usam `AAAA-MM-DD`. POST e PUT recebem o conteúdo de `dados`.
 
 | Recurso | Propriedades de `dados` | Uso no painel |
 | --- | --- | --- |

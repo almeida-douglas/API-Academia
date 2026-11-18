@@ -79,16 +79,61 @@ class AcademiaIntegrationTest {
                 .andExpect(jsonPath("$[0].id").value(avaliacao))
                 .andExpect(jsonPath("$[0].dados.peso").value(68.4));
 
-        mvc.perform(delete("/api/alunos/{id}", aluno)).andExpect(status().isConflict());
-        mvc.perform(delete("/api/mensalidades/{id}", mensalidade)).andExpect(status().isNoContent());
-        mvc.perform(delete("/api/treinos/{id}", treino)).andExpect(status().isNoContent());
-        mvc.perform(delete("/api/avaliacoes/{id}", avaliacao)).andExpect(status().isNoContent());
         mvc.perform(delete("/api/alunos/{id}", aluno)).andExpect(status().isNoContent());
         mvc.perform(get("/api/alunos/{id}", aluno)).andExpect(status().isNotFound());
+        mvc.perform(get("/api/mensalidades/{id}", mensalidade)).andExpect(status().isNotFound());
+        mvc.perform(get("/api/treinos/{id}", treino)).andExpect(status().isNotFound());
+        mvc.perform(get("/api/avaliacoes/{id}", avaliacao)).andExpect(status().isNotFound());
+        mvc.perform(get("/api/planos/{id}", plano)).andExpect(status().isOk());
+        mvc.perform(get("/api/professores/{id}", professor)).andExpect(status().isOk());
         mvc.perform(get("/")).andExpect(status().isOk());
         mvc.perform(get("/index.html")).andExpect(status().isOk())
                 .andExpect(content().string(org.hamcrest.Matchers.containsString(
                         "<strong id=\"default-unit\">Rio de Janeiro</strong>")));
+    }
+
+    @Test
+    void excluiPlanoESeusAlunosEDependencias() throws Exception {
+        String plano = criar("planos", """
+                {"nome":"Start","valorMensal":99.90,"fidelidadeMeses":0,"beneficios":[],"ativo":true}
+                """);
+        String aluno = criar("alunos", """
+                {"nome":"Aluno Teste","cpf":"00000000002","nascimento":"1997-04-12",
+                 "email":"aluno@example.com","celular":"11900000000","planoId":"%s",
+                 "inicioMatricula":"2024-01-01","diaVencimento":10,"ativo":true}
+                """.formatted(plano));
+        String mensalidade = criar("mensalidades", """
+                {"alunoId":"%s","planoId":"%s","vencimento":"2024-01-10","valor":99.90}
+                """.formatted(aluno, plano));
+
+        mvc.perform(delete("/api/planos/{id}", plano)).andExpect(status().isNoContent());
+        mvc.perform(get("/api/alunos/{id}", aluno)).andExpect(status().isNotFound());
+        mvc.perform(get("/api/mensalidades/{id}", mensalidade)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void excluiProfessorSemExcluirAluno() throws Exception {
+        String plano = criar("planos", """
+                {"nome":"Start","valorMensal":99.90,"fidelidadeMeses":0,"beneficios":[],"ativo":true}
+                """);
+        String professor = criar("professores", """
+                {"nome":"Professor Teste","cref":"000001-G/SP","email":"professor@example.com",
+                 "especialidade":"Musculação","turno":"MANHA","ativo":true}
+                """);
+        String aluno = criar("alunos", """
+                {"nome":"Aluno Teste","cpf":"00000000003","nascimento":"1997-04-12",
+                 "email":"aluno@example.com","celular":"11900000000","planoId":"%s","professorId":"%s",
+                 "inicioMatricula":"2024-01-01","diaVencimento":10,"ativo":true}
+                """.formatted(plano, professor));
+        String treino = criar("treinos", """
+                {"alunoId":"%s","professorId":"%s","objetivo":"Hipertrofia","nivel":"INTERMEDIARIO",
+                 "frequenciaSemanal":3,"inicio":"2024-01-01","fim":"2024-04-01","ativo":true,"sessoes":[]}
+                """.formatted(aluno, professor));
+
+        mvc.perform(delete("/api/professores/{id}", professor)).andExpect(status().isNoContent());
+        mvc.perform(get("/api/alunos/{id}", aluno)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.dados.professorId").value(org.hamcrest.Matchers.nullValue()));
+        mvc.perform(get("/api/treinos/{id}", treino)).andExpect(status().isNotFound());
     }
 
     private String criar(String recurso, String dados) throws Exception {

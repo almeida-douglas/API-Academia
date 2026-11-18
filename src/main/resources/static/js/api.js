@@ -47,17 +47,25 @@ function updateDemo(recurso, { method, id, dados }) {
   const db = readDemo();
   const index = db[recurso].findIndex(row => row.id === id);
   if (id && index < 0) throw new ApiError('Registro não encontrado.', 404);
-  const referencias = {
-    alunos: ['mensalidades', 'treinos', 'avaliacoes'],
-    planos: ['alunos', 'mensalidades'],
-    professores: ['alunos', 'treinos', 'avaliacoes']
-  };
-  const vinculo = { alunos: 'alunoId', planos: 'planoId', professores: 'professorId' };
-  if (method === 'DELETE' && referencias[recurso]?.some(key => db[key].some(row => row.dados[vinculo[recurso]] === id))) {
-    throw new ApiError('Este registro possui vínculos.', 409);
-  }
   if (method === 'DELETE') {
-    db[recurso].splice(index, 1);
+    const removeStudents = studentIds => {
+      db.alunos = db.alunos.filter(row => !studentIds.includes(row.id));
+      for (const key of ['mensalidades', 'treinos', 'avaliacoes']) {
+        db[key] = db[key].filter(row => !studentIds.includes(row.dados.alunoId));
+      }
+    };
+    if (recurso === 'alunos') removeStudents([id]);
+    if (recurso === 'planos') {
+      removeStudents(db.alunos.filter(row => row.dados.planoId === id).map(row => row.id));
+      db.mensalidades = db.mensalidades.filter(row => row.dados.planoId !== id);
+    }
+    if (recurso === 'professores') {
+      db.alunos.filter(row => row.dados.professorId === id).forEach(row => { row.dados.professorId = null; });
+      for (const key of ['treinos', 'avaliacoes']) {
+        db[key] = db[key].filter(row => row.dados.professorId !== id);
+      }
+    }
+    if (recurso !== 'alunos') db[recurso].splice(index, 1);
     localStorage.setItem(storageKey, JSON.stringify(db));
     return null;
   }

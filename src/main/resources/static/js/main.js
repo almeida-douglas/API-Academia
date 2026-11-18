@@ -237,7 +237,7 @@ function confirmDeletion(id) {
   const record = database.alunos.find(row => row.id === id);
   if (!record) return;
   openDialog('Excluir aluno',`<form class="dialog-form" data-save="delete" data-id="${id}">
-    <p>Deseja excluir o cadastro de <strong>${esc(record.dados.nome)}</strong>?</p>${formError}
+    <p>Deseja excluir o cadastro de <strong>${esc(record.dados.nome)}</strong>? Mensalidades, treinos e avaliações deste aluno também serão excluídos.</p>${formError}
     <div class="actions">${button('Cancelar','close')}${submit('Excluir aluno','btn danger')}</div></form>`);
 }
 
@@ -513,7 +513,11 @@ document.addEventListener('submit',async event => {
       treinos:{sessoes:[]}, avaliacoes:{alunoId:form.dataset.student}, mensalidades:{} };
     const dados = type === 'delete' ? undefined : payload(form,record?.dados ?? seed[recurso]);
     const saved = await mutacao(recurso,{method:type === 'delete' ? 'DELETE' : id ? 'PUT' : 'POST',id,dados});
-    updateDatabase(recurso,saved,id);
+    if (type === 'delete') {
+      database = await carregarAcademia();
+    } else {
+      updateDatabase(recurso,saved,id);
+    }
     if (dialog.open && sequence === dialogSequence) dialog.close();
     if (saved && recurso === 'treinos' && page === current) {
       state.trainingId = saved.id;

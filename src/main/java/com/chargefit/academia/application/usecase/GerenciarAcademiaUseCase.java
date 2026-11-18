@@ -2,9 +2,9 @@ package com.chargefit.academia.application.usecase;
 
 import com.chargefit.academia.domain.model.RegistroAcademia;
 import com.chargefit.academia.domain.exception.RegistroAcademiaNaoEncontrado;
-import com.chargefit.academia.domain.exception.RegistroAcademiaVinculado;
 import com.chargefit.academia.domain.model.Academia.*;
 import com.chargefit.academia.domain.repository.AcademiaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -34,12 +34,40 @@ public class GerenciarAcademiaUseCase {
         return salvar(tipo, id, consultar(tipo, id).criadoEm(), dados);
     }
 
+    @Transactional
     public synchronized <T extends Dados> void excluir(Class<T> tipo, UUID id) {
         consultar(tipo, id);
-        if (possuiVinculos(tipo, id)) {
-            throw new RegistroAcademiaVinculado();
+        if (tipo == Aluno.class) {
+            excluirRegistrosDoAluno(id);
+        } else if (tipo == Plano.class) {
+            listar(Aluno.class).stream().filter(r -> id.equals(r.dados().planoId()))
+                    .forEach(r -> { excluirRegistrosDoAluno(r.id()); repositorio.excluir(r.id()); });
+            listar(Mensalidade.class).stream().filter(r -> id.equals(r.dados().planoId()))
+                    .forEach(r -> repositorio.excluir(r.id()));
+        } else if (tipo == Professor.class) {
+            listar(Aluno.class).stream().filter(r -> id.equals(r.dados().professorId()))
+                    .forEach(r -> {
+                        Aluno aluno = r.dados();
+                        repositorio.salvar(Aluno.class, new RegistroAcademia<>(r.id(), r.criadoEm(),
+                                new Aluno(aluno.nome(), aluno.cpf(), aluno.nascimento(), aluno.genero(),
+                                        aluno.email(), aluno.celular(), aluno.planoId(), aluno.inicioMatricula(),
+                                        aluno.diaVencimento(), null, aluno.ativo())));
+                    });
+            listar(Treino.class).stream().filter(r -> id.equals(r.dados().professorId()))
+                    .forEach(r -> repositorio.excluir(r.id()));
+            listar(Avaliacao.class).stream().filter(r -> id.equals(r.dados().professorId()))
+                    .forEach(r -> repositorio.excluir(r.id()));
         }
         repositorio.excluir(id);
+    }
+
+    private void excluirRegistrosDoAluno(UUID id) {
+        listar(Mensalidade.class).stream().filter(r -> id.equals(r.dados().alunoId()))
+                .forEach(r -> repositorio.excluir(r.id()));
+        listar(Treino.class).stream().filter(r -> id.equals(r.dados().alunoId()))
+                .forEach(r -> repositorio.excluir(r.id()));
+        listar(Avaliacao.class).stream().filter(r -> id.equals(r.dados().alunoId()))
+                .forEach(r -> repositorio.excluir(r.id()));
     }
 
     private <T extends Dados> RegistroAcademia<T> salvar(Class<T> tipo, UUID id,
@@ -91,24 +119,6 @@ public class GerenciarAcademiaUseCase {
         if (id != null && repositorio.buscar(tipo, id).isEmpty()) {
             throw new IllegalArgumentException("Selecione um " + nome + " cadastrado.");
         }
-    }
-
-    private boolean possuiVinculos(Class<? extends Dados> tipo, UUID id) {
-        if (tipo == Aluno.class) {
-            return listar(Mensalidade.class).stream().anyMatch(r -> id.equals(r.dados().alunoId()))
-                    || listar(Treino.class).stream().anyMatch(r -> id.equals(r.dados().alunoId()))
-                    || listar(Avaliacao.class).stream().anyMatch(r -> id.equals(r.dados().alunoId()));
-        }
-        if (tipo == Plano.class) {
-            return listar(Aluno.class).stream().anyMatch(r -> id.equals(r.dados().planoId()))
-                    || listar(Mensalidade.class).stream().anyMatch(r -> id.equals(r.dados().planoId()));
-        }
-        if (tipo == Professor.class) {
-            return listar(Aluno.class).stream().anyMatch(r -> id.equals(r.dados().professorId()))
-                    || listar(Treino.class).stream().anyMatch(r -> id.equals(r.dados().professorId()))
-                    || listar(Avaliacao.class).stream().anyMatch(r -> id.equals(r.dados().professorId()));
-        }
-        return false;
     }
 
     private static String digitos(String cpf) {

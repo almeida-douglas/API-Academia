@@ -1,7 +1,6 @@
 package com.chargefit.academia.infrastructure.exception;
 
 import com.chargefit.academia.domain.exception.RegistroAcademiaNaoEncontrado;
-import com.chargefit.academia.domain.exception.RegistroAcademiaVinculado;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,12 +28,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleAcademiaNotFound(RegistroAcademiaNaoEncontrado exception,
                                                               HttpServletRequest request) {
         return build(HttpStatus.NOT_FOUND, exception.getMessage(), request);
-    }
-
-    @ExceptionHandler(RegistroAcademiaVinculado.class)
-    public ResponseEntity<ErrorResponse> handleAcademiaConflict(RegistroAcademiaVinculado exception,
-                                                              HttpServletRequest request) {
-        return build(HttpStatus.CONFLICT, exception.getMessage(), request);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
