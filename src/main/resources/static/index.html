@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#161719">
+  <title>ChargeFit · Gestão Fitness</title>
+  <link rel="stylesheet" href="styles/tokens.css">
+  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="styles/onboarding.css">
+  <link rel="stylesheet" href="styles/animations.css">
+  <script async src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <div id="onboarding" class="onboarding">
+    <header class="welcome-header">
+      <div class="welcome-shell">
+        <a class="welcome-brand" href="#" aria-label="ChargeFit, início">Charge<span>Fit</span></a>
+        <div class="welcome-header-actions">
+          <span class="welcome-location" id="welcome-location"></span>
+          <a class="welcome-demo" href="?modo=demo#visao-geral">Ver demonstração</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="welcome-main">
+      <section class="welcome-hero" aria-labelledby="welcome-title">
+        <div class="welcome-media" aria-hidden="true">
+          <video id="welcome-video" class="welcome-video" muted loop playsinline preload="none" poster="assets/onboarding.png">
+            <source data-src="https://videos.pexels.com/video-files/32239223/13749232_1920_1080_24fps.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="welcome-shell welcome-content">
+          <p class="welcome-intro">Gestão de academias</p>
+          <h1 id="welcome-title">Sua academia,<span>em movimento.</span></h1>
+          <p class="welcome-description">Gerencie alunos, mensalidades e treinos em um só painel.</p>
+          <a class="welcome-primary" href="#visao-geral">Entrar no painel <span aria-hidden="true">→</span></a>
+        </div>
+        <button id="welcome-video-control" class="welcome-video-control" type="button" aria-controls="welcome-video" hidden>Pausar vídeo</button>
+      </section>
+
+      <nav class="welcome-shell welcome-access" aria-labelledby="welcome-access-title">
+        <h2 id="welcome-access-title">Acesso rápido</h2>
+        <ul class="welcome-links">
+          <li><a href="#alunos">
+            <span class="welcome-link-icon"><img src="assets/users.svg" alt=""></span>
+            <span><strong>Alunos</strong><small>Cadastros e matrículas</small></span>
+            <span class="welcome-link-arrow" aria-hidden="true">↗</span>
+          </a></li>
+          <li><a href="#mensalidades">
+            <span class="welcome-link-icon"><img src="assets/money.svg" alt=""></span>
+            <span><strong>Mensalidades</strong><small>Pagamentos e vencimentos</small></span>
+            <span class="welcome-link-arrow" aria-hidden="true">↗</span>
+          </a></li>
+          <li><a href="#treinos">
+            <span class="welcome-link-icon"><img src="assets/dumbbell.svg" alt=""></span>
+            <span><strong>Treinos</strong><small>Fichas e exercícios</small></span>
+            <span class="welcome-link-arrow" aria-hidden="true">↗</span>
+          </a></li>
+        </ul>
+      </nav>
+    </main>
+  </div>
+  <div id="workspace" class="workspace" hidden>
+    <aside class="sidebar">
+      <a class="brand" href="#visao-geral" aria-label="ChargeFit, visão geral">Charge<span>Fit</span><small>GESTÃO FITNESS</small></a>
+      <div class="unit"><small>UNIDADE</small><strong id="default-unit">Rio de Janeiro</strong><img src="assets/down.svg" alt=""></div>
+      <nav aria-label="Navegação principal">
+        <p>PRINCIPAL</p>
+        <div id="navigation"></div>
+      </nav>
+      <div class="sidebar-footer">
+        <button type="button" class="side-action" data-action="help"><img src="assets/help.svg" alt=""> Central de ajuda</button>
+        <button type="button" class="side-action" data-action="settings"><img src="assets/settings.svg" alt=""> Configurações</button>
+      </div>
+    </aside>
+    <div class="workspace-body">
+      <header class="topbar">
+        <div class="breadcrumb">Workspace <span>/</span> <strong id="breadcrumb"></strong></div>
+        <form id="global-search" role="search" class="search">
+          <img src="assets/search.svg" alt="">
+          <input name="query" type="search" placeholder="Buscar na academia..." aria-label="Buscar na academia" required>
+        </form>
+        <button type="button" data-action="notifications" class="notification icon-btn" aria-label="Notificações"><img src="assets/bell.svg" alt=""></button>
+        <div class="profile"><span><strong>Mariana Costa</strong><small>Administradora</small></span><img src="assets/profile.svg" alt=""></div>
+      </header>
+      <main id="main" tabindex="-1"></main>
+    </div>
+  </div>
+  <dialog id="dialog" aria-labelledby="dialog-title"></dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
+

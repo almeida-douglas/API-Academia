@@ -1,0 +1,22 @@
+:where(.btn,.icon-btn,.nav-link,.side-action,.text-btn,.ficha,.tab) {
+  transition: background-color var(--motion) var(--ease), color var(--motion) var(--ease),
+    border-color var(--motion) var(--ease), transform var(--motion) var(--ease), opacity var(--motion) var(--ease);
+}
+:where(.btn,.icon-btn,.nav-link,.ficha):hover { background-color: var(--accent-soft); }
+:where(.text-btn,.side-action):hover { text-decoration: underline; }
+:where(.btn):hover { transform: translateY(-1px); }
+:where(.btn,.nav-link,.icon-btn):active { transform: scale(.98); }
+.metric { transition: transform var(--motion) var(--ease); }
+.metric:hover { transform: translateY(-2px); }
+.enter,.reveal,dialog[open] { animation: enter 340ms var(--ease) both; }
+.reveal { animation-delay: calc(min(var(--i,0),10) * 36ms); }
+dialog[open]::backdrop { animation: fade-in 210ms var(--ease) both; }
+.track span { transform-origin: left; animation: bar 660ms var(--ease) both; }
+.skeleton { animation: pulse 950ms var(--ease) infinite alternate; }
+@keyframes enter { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes bar { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes pulse { to { opacity: .55; } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0ms !important; transition-duration: .01ms !important; }
+}
