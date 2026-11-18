@@ -1,6 +1,5 @@
 package com.chargefit.academia.infrastructure.exception;
 
-import com.chargefit.academia.domain.exception.BookNotFoundException;
 import com.chargefit.academia.domain.exception.RegistroAcademiaNaoEncontrado;
 import com.chargefit.academia.domain.exception.RegistroAcademiaVinculado;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,14 +24,6 @@ import java.util.Objects;
 public class GlobalExceptionHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
-
-    @ExceptionHandler(BookNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleBookNotFound(
-            BookNotFoundException exception,
-            HttpServletRequest request
-    ) {
-        return build(HttpStatus.NOT_FOUND, exception.getMessage(), request);
-    }
 
     @ExceptionHandler(RegistroAcademiaNaoEncontrado.class)
     public ResponseEntity<ErrorResponse> handleAcademiaNotFound(RegistroAcademiaNaoEncontrado exception,

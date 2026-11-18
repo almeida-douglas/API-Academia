@@ -52,6 +52,6 @@ Cada linha pode ser listada por `GET /api/{recurso}` ou consultada em `GET /api/
 | `treinos` | `alunoId`, `professorId`, `objetivo`, `nivel`, `frequenciaSemanal`, `inicio`, `fim`, `ativo`, `sessoes[]` | Fichas, abas e treinos vigentes. Cada sessão contém `nome`, `titulo` e `exercicios[]`. Níveis `INICIANTE`, `INTERMEDIARIO`, `AVANCADO`. |
 | `avaliacoes` | `alunoId`, `professorId`, `data`, `peso`, `altura`, `gordura`, `cintura`, `observacoes`, `objetivo`, `reavaliacao` | Histórico, peso, gordura, massa magra estimada e lembretes de reavaliação. |
 
-Os exercícios contêm `nome`, `grupo`, `equipamento`, `series`, `repeticoes`, `carga` e `pausaSegundos`. Valores, medidas e contagens são números JSON. As relações usam UUID e campos opcionais aceitam `null`. As rotas anteriores de livros continuam em `/books`.
+Os exercícios contêm `nome`, `grupo`, `equipamento`, `series`, `repeticoes`, `carga` e `pausaSegundos`. Valores, medidas e contagens são números JSON. As relações usam UUID e campos opcionais aceitam `null`.
 
 A receita soma `valor` pelo mês de `dataPagamento`. A taxa de pagamento conta mensalidades pagas na competência de `vencimento`. Cobranças sem pagamento ficam pendentes até o vencimento e em atraso depois dessa data. O painel usa a data civil do Rio de Janeiro para determinar vigência, atrasos e vencimentos próximos. A massa magra é calculada a partir de peso e percentual de gordura. Métricas históricas exigem datas registradas no próprio modelo.
